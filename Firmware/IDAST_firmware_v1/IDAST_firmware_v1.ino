@@ -11,7 +11,7 @@ float setTemp = 38.0;
 #define ONE_WIRE_BUS 2
 
 #include <Servo.h>
-  Servo servo1, servo2;
+Servo servo1, servo2;
 
 
 /*****SERVO Variable******/
@@ -55,28 +55,27 @@ void setup() {
   pinMode(LDR3, INPUT);
   pinMode(LDR4, INPUT);
 
-  lcd.init();           // Initialize the LCD
-  lcd.backlight();      // Turn on the backlight
+  lcd.init();       // Initialize the LCD
+  lcd.backlight();  // Turn on the backlight
 
-  sensors.begin();      // Start the DS18B20 sensor
+  sensors.begin();  // Start the DS18B20 sensor
 
   lcd.setCursor(0, 0);
   lcd.print("Temp Sensor");
   delay(1000);
   lcd.clear();
 
-  while(0){
-    int LDR_TL = analogRead(LDR4); // Bottom Right
-     Serial.println(LDR_TL);
-     delay(100);
+  while (0) {
+    int LDR_TL = analogRead(LDR4);  // Bottom Right
+    Serial.println(LDR_TL);
+    delay(100);
   }
 
-  servo1.attach(9);   // Attach servo to pin 9
+  servo1.attach(9);  // Attach servo to pin 9
   servo2.attach(10);
   servoMoving(120);
 
   delay(100);
-
 }
 
 void loop() {
@@ -84,15 +83,15 @@ void loop() {
   Init_LDR();
   //servo_test();
 
-  if(LDR_TR > LDR_BL){
+  if (LDR_TR > LDR_BL) {
     servo_test();
   }
 
 
-  
 
-cnt++;
-delay(10);
+
+  cnt++;
+  delay(10);
 }
 
 void servoMoving(int pos) {
@@ -113,30 +112,30 @@ void servoMoving(int pos) {
   Serial.print(" | ");
   Serial.println();
   */
-  
 }
 
-void servo_test(){
+void servo_test() {
 
-  for(int i = MIN_POSITION; i < MAX_POSITION; i++){
+  for (int i = MIN_POSITION; i < MAX_POSITION; i++) {
     servoMoving(i);
     delay(SERVO_LATANCY);
-  }delay(100);
+  }
+  delay(100);
 
-  for(int i = MAX_POSITION; i > MIN_POSITION; i--){
+  for (int i = MAX_POSITION; i > MIN_POSITION; i--) {
     servoMoving(i);
     delay(SERVO_LATANCY);
-  }delay(100);
-  
+  }
+  delay(100);
 }
 
 
 
-void Init_LDR(){
-  LDR_TL = analogRead(LDR4); // Top Left
-  LDR_TR = analogRead(LDR3); // Top Right
-  LDR_BL = analogRead(LDR1); // Bottom Left
-  LDR_BR = analogRead(LDR2); // Bottom Right
+void Init_LDR() {
+  LDR_TL = analogRead(LDR4);  // Top Left
+  LDR_TR = analogRead(LDR3);  // Top Right
+  LDR_BL = analogRead(LDR1);  // Bottom Left
+  LDR_BR = analogRead(LDR2);  // Bottom Right
 
   // Print with labels
   Serial.print("TL: ");
@@ -153,22 +152,26 @@ void Init_LDR(){
 }
 
 
-void Init_temp(){
+void Init_temp() {
 
-  sensors.requestTemperatures();               // Ask for temperature
-  tempC = sensors.getTempCByIndex(0);    // Get temperature in Celsius
-  if(tempC >= setTemp){
+  //lcd.clear();
+  sensors.requestTemperatures();       // Ask for temperature
+  tempC = sensors.getTempCByIndex(0);  // Get temperature in Celsius
+  if (tempC >= setTemp) {
     digitalWrite(PUMP_PIN, 1);
-    lcd.setCursor(1, 0);
-    lcd.print("Pump ON ");
-  }else{
-    digitalWrite(PUMP_PIN, 0);
     lcd.setCursor(1, 1);
-    lcd.print("Pump OFF");
+    lcd.print("Pump ON ");
   }
-  lcd.setCursor(0, 0);
-  lcd.print("Temp: ");
-  lcd.print(tempC);
-  lcd.print((char)223);  // Degree symbol
-  lcd.print("C");
+
+  if(tempC <= (setTemp-4)){
+  digitalWrite(PUMP_PIN, 0);
+  lcd.setCursor(1, 1);
+  lcd.print("Pump OFF");
+  }
+    
+lcd.setCursor(0, 0);
+lcd.print("Temp: ");
+lcd.print(tempC);
+lcd.print((char)223);  // Degree symbol
+lcd.print("C");
 }

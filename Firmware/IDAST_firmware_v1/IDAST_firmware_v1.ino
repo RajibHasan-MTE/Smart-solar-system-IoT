@@ -3,7 +3,6 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-
 /**********User variable*************/
 float setTemp = 38.0;
 
@@ -12,7 +11,6 @@ float setTemp = 38.0;
 
 #include <Servo.h>
 Servo servo1, servo2;
-
 
 /*****SERVO Variable******/
 #define MAX_POSITION 140
@@ -66,8 +64,7 @@ void setup() {
   lcd.clear();
 
   while (0) {
-    int LDR_TL = analogRead(LDR4);  // Bottom Right
-    Serial.println(LDR_TL);
+    Init_LDR();
     delay(100);
   }
 
@@ -83,10 +80,9 @@ void loop() {
   Init_LDR();
   //servo_test();
 
-  if (LDR_TR > LDR_BL) {
+  if (LDR_TL > LDR_BL) {
     servo_test();
   }
-
 
 
 
@@ -101,7 +97,6 @@ void servoMoving(int pos) {
 
   servo1.write(servo_1_pos);
   servo2.write(servo_2_pos);
-
 
   /*
     Serial.print("Servo-1: ");
@@ -120,22 +115,21 @@ void servo_test() {
     servoMoving(i);
     delay(SERVO_LATANCY);
   }
-  delay(100);
+  delay(10);
 
   for (int i = MAX_POSITION; i > MIN_POSITION; i--) {
     servoMoving(i);
     delay(SERVO_LATANCY);
   }
-  delay(100);
+  delay(10);
 }
-
 
 
 void Init_LDR() {
   LDR_TL = analogRead(LDR4);  // Top Left
-  LDR_TR = analogRead(LDR3);  // Top Right
-  LDR_BL = analogRead(LDR1);  // Bottom Left
-  LDR_BR = analogRead(LDR2);  // Bottom Right
+  LDR_TR = analogRead(LDR1);  // Top Right
+  LDR_BL = analogRead(LDR2);  // Bottom Left
+  LDR_BR = analogRead(LDR3);  // Bottom Right
 
   // Print with labels
   Serial.print("TL: ");
@@ -150,7 +144,6 @@ void Init_LDR() {
   Serial.print(" | BR: ");
   Serial.println(LDR_BR);
 }
-
 
 void Init_temp() {
 
@@ -175,3 +168,5 @@ lcd.print(tempC);
 lcd.print((char)223);  // Degree symbol
 lcd.print("C");
 }
+
+

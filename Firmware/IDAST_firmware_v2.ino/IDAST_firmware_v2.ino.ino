@@ -10,7 +10,8 @@ Servo servoRight;
 // Define servo pins
 #define SERVO_LEFT_PIN 9
 #define SERVO_RIGHT_PIN 10
-
+#define ONE_WIRE_BUS 2    // DS18B20 pin
+#define PUMP_PIN 8        // Pump relay pin
 // Define LDR pins
 #define LDR_LEFT A0
 #define LDR_RIGHT A1

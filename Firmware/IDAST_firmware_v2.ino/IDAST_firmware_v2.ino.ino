@@ -3,6 +3,7 @@
 #include <DallasTemperature.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <string.h>
 // Define servo objects
 Servo servoLeft;
 Servo servoRight;
@@ -37,6 +38,7 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
+uint8_t cnt;
 void setup() {
   Serial.begin(9600);
   // LCD Setup
@@ -62,16 +64,35 @@ void setup() {
 }
 
 void loop() {
-  readTemperature();
-  // Read LDR values
+  static bool state = 0;
+
+  if(Serial.available()){
+    String str = Serial.readStringUntil('\n');
+    str.trim();
+    if(str.indexOf("ON") >= 0){
+      state = 1;
+    }else{
+      state = 0;
+    }
+  }
+  
+  if(state == 1) readTemperature();
+
   ldrLeftValue = analogRead(LDR_RIGHT);
   ldrRightValue = analogRead(LDR_LEFT);
+  //lcd.print(cnt);
+  //cnt++;
+  //sensors.requestTemperatures();
+  //tempC = sensors.getTempCByIndex(0);
 
   // Print values
+  /*
   Serial.print("LDR Left: ");
   Serial.print(ldrLeftValue);
   Serial.print(" | LDR Right: ");
   Serial.println(ldrRightValue);
+  */
+  
 
   // Compare LDR values
   int diff = ldrLeftValue - ldrRightValue;
@@ -93,7 +114,7 @@ void loop() {
   servoLeft.write(servoPosition);
   servoRight.write(180 - servoPosition);  // Reverse for right servo
 
-  delay(100); // Smooth movement
+ delay(50); // Smooth movement
 }
 
 // Read temperature and control pump
@@ -101,11 +122,14 @@ void readTemperature() {
   sensors.requestTemperatures();
   tempC = sensors.getTempCByIndex(0);
 
+  
   lcd.setCursor(0, 0);
   lcd.print("Temp: ");
   lcd.print(tempC);
   lcd.print((char)223);  // Degree Symbol
   lcd.print("C    ");
+
+  
 
   if (tempC >= setTemp) {
     digitalWrite(PUMP_PIN, HIGH); // Turn Pump ON

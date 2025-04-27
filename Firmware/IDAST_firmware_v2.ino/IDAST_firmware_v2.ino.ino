@@ -27,11 +27,26 @@ const int moveStep = 1;        // How much to move each time
 const int minAngle = 30;        // Minimum angle
 const int maxAngle = 160;      // Maximum angle
 
+/********** User variables *************/
+float setTemp = 38.0;     // Pump ON temperature
+float tempC;
 
+// Libraries Setup
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void setup() {
   Serial.begin(9600);
-
+  // LCD Setup
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("IDAST Project v1");
+  delay(2000);
+  lcd.clear();
+  // Temperature sensor
+  sensors.begin();
   // Attach servos
   servoLeft.attach(SERVO_LEFT_PIN);
   servoRight.attach(SERVO_RIGHT_PIN);
@@ -46,6 +61,7 @@ void setup() {
 }
 
 void loop() {
+  readTemperature();
   // Read LDR values
   ldrLeftValue = analogRead(LDR_RIGHT);
   ldrRightValue = analogRead(LDR_LEFT);
@@ -79,3 +95,24 @@ void loop() {
   delay(100); // Smooth movement
 }
 
+// Read temperature and control pump
+void readTemperature() {
+  sensors.requestTemperatures();
+  tempC = sensors.getTempCByIndex(0);
+
+  lcd.setCursor(0, 0);
+  lcd.print("Temp: ");
+  lcd.print(tempC);
+  lcd.print((char)223);  // Degree Symbol
+  lcd.print("C    ");
+
+  if (tempC >= setTemp) {
+    digitalWrite(PUMP_PIN, HIGH); // Turn Pump ON
+    lcd.setCursor(0, 1);
+    lcd.print("Pump: ON ");
+  } else if (tempC <= (setTemp - 4)) {
+    digitalWrite(PUMP_PIN, LOW); // Turn Pump OFF
+    lcd.setCursor(0, 1);
+    lcd.print("Pump: OFF");
+  }
+}

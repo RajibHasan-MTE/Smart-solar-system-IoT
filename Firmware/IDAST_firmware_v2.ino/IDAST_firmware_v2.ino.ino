@@ -1,5 +1,8 @@
 #include <Servo.h>
-
+#include <OneWire.h> 
+#include <DallasTemperature.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 // Define servo objects
 Servo servoLeft;
 Servo servoRight;
@@ -23,6 +26,8 @@ const int threshold = 30;      // Minimum difference to move
 const int moveStep = 1;        // How much to move each time
 const int minAngle = 30;        // Minimum angle
 const int maxAngle = 160;      // Maximum angle
+
+
 
 void setup() {
   Serial.begin(9600);
